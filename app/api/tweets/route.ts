@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { generateText } from 'ai';
+import { openai } from '@ai-sdk/openai';
 
 // Define the hardcoded accounts for each technology
 const techAccounts: Record<string, string[]> = {
@@ -69,7 +71,15 @@ export async function GET(request: Request) {
       })
     );
 
-    return NextResponse.json(allTweets);
+    const tweets = allTweets.flatMap(({ tweets }) => tweets);
+    const summary = await generateText({
+      model: openai('gpt-4o-mini'),
+      prompt: `You are a coding assistant expert. You are given a list of tweets from a group of developers who are using a particular technology. Your job is to summarize the tweets in a way that is helpful for a code editor to understand what is happening in the community and what is being discussed, and generate code that is up to date with the latest technology. Here are the tweets: ${JSON.stringify(tweets)}`
+    })
+
+    console.log(summary.text)
+
+    return NextResponse.json({ summary: summary.text });
 
   } catch (error) {
     console.error('Detailed error:', error);
