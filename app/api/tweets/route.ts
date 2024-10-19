@@ -51,7 +51,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Detailed error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch user information', details: error.message },
+      { error: 'Failed to fetch user information', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
