@@ -1,12 +1,25 @@
 import { NextResponse } from 'next/server';
 
+// Define the hardcoded accounts for each technology
+const techAccounts: Record<string, string[]> = {
+  nextjs: ['nicoalbanese10', 'lgrammel', 'jaredpalmer'],
+  react: ['reactjs', 'dan_abramov', 'sophiebits'],
+  typescript: ['typescript', 'orta', 'RyanCavanaugh'],
+  // Add more technologies and their associated accounts as needed
+};
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const usernames = searchParams.get('usernames')?.split(',') || [];
+  const technology = searchParams.get('technology');
   const bearerToken = process.env.TWITTER_BEARER_TOKEN;
 
-  if (usernames.length === 0) {
-    return NextResponse.json({ error: 'At least one username is required' }, { status: 400 });
+  if (!technology) {
+    return NextResponse.json({ error: 'Technology parameter is required' }, { status: 400 });
+  }
+
+  const accounts = techAccounts[technology.toLowerCase()];
+  if (!accounts || accounts.length === 0) {
+    return NextResponse.json({ error: 'No accounts found for the specified technology' }, { status: 400 });
   }
 
   if (!bearerToken) {
@@ -14,9 +27,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Fetch user IDs for all usernames
+    // Fetch user IDs for all accounts
     const userIds = await Promise.all(
-      usernames.map(async (username) => {
+      accounts.map(async (username) => {
         const userResponse = await fetch(
           `https://api.twitter.com/2/users/by/username/${username}`,
           {
@@ -31,15 +44,15 @@ export async function GET(request: Request) {
         }
 
         const userData = await userResponse.json();
-        return userData.data.id;
+        return { id: userData.data.id, username };
       })
     );
 
     // Fetch tweets for all user IDs
     const allTweets = await Promise.all(
-      userIds.map(async (userId) => {
+      userIds.map(async ({ id, username }) => {
         const tweetsResponse = await fetch(
-          `https://api.twitter.com/2/users/${userId}/tweets?tweet.fields=created_at,author_id&max_results=10`,
+          `https://api.twitter.com/2/users/${id}/tweets?tweet.fields=created_at,author_id&max_results=10`,
           {
             headers: {
               Authorization: `Bearer ${bearerToken}`
@@ -48,18 +61,15 @@ export async function GET(request: Request) {
         );
 
         if (!tweetsResponse.ok) {
-          throw new Error(`API responded with status ${tweetsResponse.status} for user ID ${userId}`);
+          throw new Error(`API responded with status ${tweetsResponse.status} for user ${username}`);
         }
 
         const tweetsData = await tweetsResponse.json();
-        return tweetsData.data;
+        return { username, tweets: tweetsData.data };
       })
     );
 
-    // Combine all tweets into a single array
-    const combinedTweets = allTweets.flat();
-
-    return NextResponse.json(combinedTweets);
+    return NextResponse.json(allTweets);
 
   } catch (error) {
     console.error('Detailed error:', error);
