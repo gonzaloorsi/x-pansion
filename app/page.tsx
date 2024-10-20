@@ -55,7 +55,10 @@ const HomePage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl bg-gray-900">
-      <h1 className="text-4xl font-bold mb-8 text-center text-blue-400">Technology Tweet Summary</h1>
+      <h1 className="text-4xl font-bold mb-2 text-center text-blue-400">X-pansion</h1>
+      <p className="text-xl text-center text-gray-400 mb-8">
+        Supercharging AI Code Generation with Real-Time Insights from Developer-Driven Social Knowledge
+      </p>
       
       {/* New section for technology links */}
       <div className="mb-6 flex flex-wrap gap-2 justify-center">
