@@ -1,8 +1,21 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 
-const technologies = ['nextjs', 'react', 'typescript'] // Add more as needed
+const technologies = ['nextjs', 'aisdk', 'langchain']
+
+// New component for technology links
+const TechnologyLink = ({ tech }: { tech: string }) => (
+  <Link
+    href={`/tech/${tech}`}
+    className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+    tabIndex={0}
+    aria-label={`View details for ${tech}`}
+  >
+    {tech}
+  </Link>
+)
 
 const HomePage = () => {
   const [summary, setSummary] = useState<string>('')
@@ -43,6 +56,14 @@ const HomePage = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl bg-gray-900">
       <h1 className="text-4xl font-bold mb-8 text-center text-blue-400">Technology Tweet Summary</h1>
+      
+      {/* New section for technology links */}
+      <div className="mb-6 flex flex-wrap gap-2 justify-center">
+        {technologies.map((tech) => (
+          <TechnologyLink key={tech} tech={tech} />
+        ))}
+      </div>
+
       <div className="mb-8">
         <div className="flex">
           <select
