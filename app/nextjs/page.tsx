@@ -66,7 +66,7 @@ const AISDKInsightsPage: React.FC = () => {
         <h2 className="text-3xl font-bold mb-6 text-blue-300">Overall Impression</h2>
         <p className="text-gray-300 leading-relaxed">
           The tweets reflect a vibrant and collaborative developer community centered around AI SDK and related tools. 
-          The authors are deeply involved in advancing the SDK's capabilities, supporting other developers, and integrating 
+          The authors are deeply involved in advancing the SDK&apos;s capabilities, supporting other developers, and integrating 
           new features that enhance AI application development. Their engagement suggests a commitment to improving the AI 
           development ecosystem through innovation, collaboration, and open communication.
         </p>
